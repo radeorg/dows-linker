@@ -19,16 +19,17 @@ public class PythonHolder {
 
     /**
      * 获取Python端点
+     *
      * @param clientName
      * @param entrypointClass
      * @return
      */
-    public static Entrypoint getEntrypoint(String clientName, Class<? extends Entrypoint> entrypointClass) {
+    public static <T extends Entrypoint> T getEntrypoint(String clientName, Class<T> entrypointClass) {
         PythonClientServer pythonClientServer = clients.get(clientName);
         Object entrypoint = pythonClientServer.getEndpoints().get(entrypointClass);
         if (entrypoint == null) {
             throw new RuntimeException("Entrypoint not found");
         }
-        return (Entrypoint) entrypoint;
+        return (T) entrypoint;
     }
 }

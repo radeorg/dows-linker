@@ -1,8 +1,9 @@
 dows:
   linker:
     python:
-      - clientName:
-        javaPort:
-        pythonPort:
+      - clientName: "python312"
+        javaPort: 25335
+        pythonPort: 25336
         entrypoints:
+          - org.dows.linker.python.example.PdfProcessEntrypoint
 
