@@ -1,12 +1,14 @@
-package org.dows.linker.verticle;
+package org.dows.linker.mail;
 
 import cn.hutool.core.bean.BeanUtil;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dows.linker.config.MailProperties;
+import org.dows.linker.repository.dao.SettingMailDao;
+import org.dows.linker.repository.entity.SettingMailEntity;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -18,10 +20,7 @@ import org.springframework.integration.mail.MailReceivingMessageSource;
 import org.springframework.messaging.Message;
 import org.springframework.scheduling.TaskScheduler;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -70,7 +69,8 @@ public class MailReceiverConfiguration implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         log.info("开始初始化邮件服务器配置...");
         // 从数据库加载所有邮件服务器配置
-        List<SettingMailEntity> settingMailEntities = settingMailDao.list();
+        //List<SettingMailEntity> settingMailEntities = settingMailDao.list();
+        List<SettingMailEntity> settingMailEntities = new ArrayList<>();
         log.info("加载到 {} 个邮件服务器配置", settingMailEntities.size());
 
         for (SettingMailEntity setting : settingMailEntities) {

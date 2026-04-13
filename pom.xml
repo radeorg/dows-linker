@@ -2,10 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
+   <!-- <parent>
         <groupId>org.dows.framework</groupId>
         <artifactId>rade-parent</artifactId>
         <version>2.0.0-SNAPSHOT</version>
+    </parent>-->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.7</version>
     </parent>
     <artifactId>dows-linker</artifactId>
     <groupId>org.dows.cloud</groupId>
@@ -46,6 +51,7 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
+            <version>5.8.20</version>
         </dependency>
 
         <dependency>
@@ -79,13 +85,23 @@
         </dependency>
 
         <dependency>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>jakarta.mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <!--<dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
@@ -95,11 +111,12 @@
         <dependency>
             <groupId>org.dows.framework</groupId>
             <artifactId>rade-core</artifactId>
+            <version>${rade.version}</version>
         </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
-            <dependency>
+            <!--<dependency>
                 <groupId>org.dows.cloud</groupId>
                 <artifactId>setting-api</artifactId>
                 <version>${project.version}</version>
@@ -145,7 +162,7 @@
                 <groupId>org.dows.cloud</groupId>
                 <artifactId>setting-repository</artifactId>
                 <version>${project.version}</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>org.dows.framework</groupId>
