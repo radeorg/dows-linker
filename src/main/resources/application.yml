@@ -1,7 +1,8 @@
 dows:
   linker:
     python:
-      - javaPort:
+      - clientName:
+        javaPort:
         pythonPort:
         entrypoints:
 

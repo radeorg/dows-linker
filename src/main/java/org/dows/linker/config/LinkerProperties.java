@@ -1,8 +1,7 @@
 package org.dows.linker.config;
 
 import lombok.Data;
-import org.dows.linker.Entrypoint;
-import org.dows.linker.PythonEndpoint;
+import org.dows.linker.python.PythonLinker;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
@@ -12,6 +11,6 @@ import java.util.List;
 public class LinkerProperties {
 
 
-    private List<PythonEndpoint> python;
+    private List<PythonLinker> python;
 
 }

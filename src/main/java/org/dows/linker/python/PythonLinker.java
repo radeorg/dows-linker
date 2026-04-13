@@ -1,11 +1,12 @@
-package org.dows.linker;
+package org.dows.linker.python;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class PythonEndpoint {
+public class PythonLinker {
+    private String clientName;
     private int javaPort;
     private int pythonPort;
 
