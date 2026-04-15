@@ -2,7 +2,7 @@ spring:
   application:
     name: dows-linker
   profiles:
-    include: mysql,mybatis
+    include: mysql,mybatis,async
     active: @profileActive@
 
   jackson:
@@ -58,6 +58,22 @@ dows:
         threadPoolSize: 4
         entrypoints:
           - org.dows.linker.python.example.PdfProcessEntrypoint
+    mail:
+      folders:
+        inbox: "INBOX"
+        download: "DOWNLOAD"
+      download:
+        folder: E:/download/mail
+
+
+rade:
+  jackson:
+    timestamp: true
+    big-number-to-string: true
+  cacheName: hrm
+  encryptor:
+    enable: true
+    algorithm: AES
 
 ---
 #开发环境

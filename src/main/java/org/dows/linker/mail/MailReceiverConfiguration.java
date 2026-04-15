@@ -69,8 +69,8 @@ public class MailReceiverConfiguration implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         log.info("开始初始化邮件服务器配置...");
         // 从数据库加载所有邮件服务器配置
-        //List<SettingMailEntity> settingMailEntities = settingMailDao.list();
-        List<SettingMailEntity> settingMailEntities = new ArrayList<>();
+        List<SettingMailEntity> settingMailEntities = settingMailDao.list();
+        //List<SettingMailEntity> settingMailEntities = new ArrayList<>();
         log.info("加载到 {} 个邮件服务器配置", settingMailEntities.size());
 
         for (SettingMailEntity setting : settingMailEntities) {
@@ -178,7 +178,7 @@ public class MailReceiverConfiguration implements ApplicationRunner {
      * @param config 邮件服务器配置
      * @return 连接URL
      */
-    private String buildStoreUrl(MailProperties config) {
+    /*private String buildStoreUrl(MailProperties config) {
         // 处理特殊字符，如@需要编码为%40
         String encodedUsername = config.getEmailAddress().replace("@", "%40");
         String encodedPassword = config.getAuthCode().replace("@", "%40");
@@ -187,6 +187,20 @@ public class MailReceiverConfiguration implements ApplicationRunner {
         return String.format("%s://%s:%s@%s:%d/%s",
                 protocol, encodedUsername, encodedPassword,
                 config.getMailHost(), config.getMailPort(), config.getFolder());
+    }*/
+    private String buildStoreUrl(MailProperties config) {
+        try {
+            String encodedUsername = java.net.URLEncoder.encode(config.getEmailAddress(), java.nio.charset.StandardCharsets.UTF_8);
+            String encodedPassword = java.net.URLEncoder.encode(config.getAuthCode(), java.nio.charset.StandardCharsets.UTF_8);
+
+            String protocol = config.getSslEnabled() ? config.getProtocol() + "s" : config.getProtocol();
+            return String.format("%s://%s:%s@%s:%d/%s",
+                    protocol, encodedUsername, encodedPassword,
+                    config.getMailHost(), config.getMailPort(), config.getFolder());
+        } catch (Exception e) {
+            log.error("构建邮件服务器URL失败: {}", config.getEmailAddress(), e);
+            throw new RuntimeException("构建邮件服务器URL失败", e);
+        }
     }
 
     /**
@@ -209,7 +223,16 @@ public class MailReceiverConfiguration implements ApplicationRunner {
             properties.put(String.format("mail.%s.socketFactory.class", protocol), "jakarta.mail.ssl.SSLSocketFactory");
             properties.put(String.format("mail.%s.socketFactory.fallback", protocol), "false");
             properties.put(String.format("mail.%s.socketFactory.port", protocol), config.getMailPort().toString());
+
+            properties.put(String.format("mail.%s.ssl.enable", protocol), "true");
+        } else {
+//            properties.put(String.format("mail.%s.starttls.enable", protocol), "true");
+//            properties.put(String.format("mail.%s.starttls.required", protocol), "true");
         }
+
+//        properties.put(String.format("mail.%s.connectiontimeout", protocol), "30000");
+//        properties.put(String.format("mail.%s.timeout", protocol), "30000");
+//        properties.put(String.format("mail.%s.writetimeout", protocol), "30000");
 
         return properties;
     }
