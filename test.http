@@ -1,0 +1,63 @@
+###
+POST http://localhost:8080/v1/open/router/submit
+
+###
+POST http://localhost:8080/v1/open/router/submit
+Content-Type: application/json
+
+{
+  "rawData": "",
+  "appId": "",
+  "operatorId": 0,
+  "routerChannelId": 0,
+  "sessionType": 0,
+  "priority": 0
+}
+
+###
+POST http://localhost:8080/v1/open/router/submit
+Content-Type: application/json
+
+{
+  "rawData": "",
+  "appId": "",
+  "operatorId": 0,
+  "routerChannelId": 0,
+  "sessionType": 0,
+  "priority": 0
+}
+
+###
+POST http://localhost:8080/config/key/save
+Content-Type: application/json
+
+{
+  "key": "ddd",
+  "deescription": "ffff",
+  "dataType": "ggggg",
+  "tag": "eeee"
+}
+
+<> 2025-11-15T233546.200.json
+<> 2025-11-15T232959.500.json
+<> 2025-11-15T232943.500.json
+<> 2025-11-15T214906.500.json
+<> 2025-11-15T214442.500.json
+<> 2025-11-15T214033.500.json
+
+###
+GET http://localhost:18001/v1/open/gpt/chat/stream?
+    prompt={{$random.alphanumeric(8)}}
+
+<> 2025-12-07T213503.503.json
+<> 2025-12-07T213135.503.json
+
+
+###
+GET http://localhost:18001/sse/deepseek?request={{$placeholder}}
+
+###
+POST http://localhost:18001/convert-multiple?
+    directory=E:\workspace\projects\pdf\jpy4fp\pdf&
+    files=1.pdf,2.pdf,3.pdf,4.pdf
+Content-Type: application/x-www-form-urlencoded

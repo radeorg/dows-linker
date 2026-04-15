@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<appenders>
+    <Console name="CONSOLE" target="SYSTEM_OUT">
+        <PatternLayout pattern="${PATTERN}" charset="${CHARSET}"/>
+    </Console>
+    <GRPCLogClientAppender name="SKYWALKING">
+        <PatternLayout pattern="${SKYWALKING_PATTERN}"/>
+    </GRPCLogClientAppender>
+    <RollingRandomAccessFile name="FILE-INFO"
+                             fileName="${LOG_INFO_FILE}"
+                             filePattern="${LOG_INFO_FILE_GZ}">
+        <LevelRangeFilter minLevel="INFO" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+        <PatternLayout pattern="${PATTERN}" charset="${CHARSET}"/>
+        <Policies>
+            <!--每天滚动一次-->
+            <TimeBasedTriggeringPolicy interval="${TIME_TRIGGERING_POLICY}"/>
+            <!--或者日志达到10KB 滚动一次-->
+            <SizeBasedTriggeringPolicy size="${MAX_FILE_SIZE}"/>
+        </Policies>
+        <!--日志删除策略-->
+        <DefaultRolloverStrategy fileIndex="nomax">
+            <Delete basePath="${LOG_HOME}" maxDepth="2">
+                <IfFileName glob="info.*.log.gz"/>
+                <IfLastModified age="${MAX_INFO_HISTORY}"/>
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingRandomAccessFile>
+
+    <RollingRandomAccessFile name="FILE-ERROR"
+                             fileName="${LOG_ERROR_FILE}"
+                             filePattern="${LOG_ERROR_FILE_GZ}">
+        <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+        <PatternLayout pattern="${PATTERN}" charset="${CHARSET}"/>
+        <Policies>
+            <!--每天滚动一次-->
+            <TimeBasedTriggeringPolicy interval="${TIME_TRIGGERING_POLICY}"/>
+            <!--或者日志达到10KB 滚动一次-->
+            <SizeBasedTriggeringPolicy size="${MAX_FILE_SIZE}"/>
+        </Policies>
+        <!--日志删除策略-->
+        <DefaultRolloverStrategy fileIndex="nomax">
+            <Delete basePath="${LOG_HOME}" maxDepth="2">
+                <IfFileName glob="error.*.log.gz"/>
+                <IfLastModified age="${MAX_ERROR_HISTORY}"/>
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingRandomAccessFile>
+
+</appenders>

@@ -6,16 +6,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class PdfService {
     private final String PDF_DIR = System.getProperty("user.dir") + File.separator + "pdf";
     private final String RESULT_DIR = System.getProperty("user.dir") + File.separator + "result";
-
 
     /**
      * 上传PDF文件并同步转换为MD
@@ -172,94 +177,94 @@ public class PdfService {
         return output.toString().trim();
     }
 
-//    /**
-//     * 并发转换多个PDF文件为MD
-//     *
-//     * @param directory PDF文件目录
-//     * @param files     PDF文件名列表
-//     * @return 文件名到MD文件路径的映射
-//     */
-//    public Map<String, String> convertMultipleByFilenames(String directory, List<String> files) {
-//        // 创建线程池
-//        ExecutorService executorService = Executors.newFixedThreadPool(threadPoolSize);
-//
-//        // 存储转换结果
-//        Map<String, String> results = new ConcurrentHashMap<>();
-//
-//        try {
-//            // 提交所有转换任务
-//            List<CompletableFuture<Void>> futures = files.stream()
-//                    .map(file -> CompletableFuture.runAsync(() -> {
-//                        try {
-//                            String pdfPath = directory + File.separator + file;
-//                            String mdPath = convertAsyncWithCallback(pdfPath);
-//                            results.put(file, mdPath);
-//                        } catch (Exception e) {
-//                            results.put(file, "转换失败: " + e.getMessage());
-//                        }
-//                    }, executorService))
-//                    .toList();
-//
-//            // 等待所有任务完成
-//            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-//
-//            return results;
-//        } finally {
-//            // 关闭线程池
-//            executorService.shutdown();
-//        }
-//    }
-//
-//    /**
-//     * 上传多个PDF文件并并发转换为MD
-//     *
-//     * @param files 上传的PDF文件数组
-//     * @return 文件名到MD文件路径的映射
-//     */
-//    public Map<String, String> uploadAndConvertMultiple(MultipartFile[] files) {
-//        // 创建目录
-//        try {
-//            Files.createDirectories(Path.of(PDF_DIR));
-//            Files.createDirectories(Path.of(RESULT_DIR));
-//        } catch (IOException e) {
-//            throw new RuntimeException("创建目录失败: " + e.getMessage(), e);
-//        }
-//
-//        // 创建线程池
-//        ExecutorService executorService = Executors.newFixedThreadPool(threadPoolSize);
-//
-//        // 存储转换结果
-//        Map<String, String> results = new ConcurrentHashMap<>();
-//
-//        try {
-//            // 提交所有转换任务
-//            List<CompletableFuture<Void>> futures = new java.util.ArrayList<>();
-//            for (MultipartFile file : files) {
-//                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-//                    try {
-//                        String filename = file.getOriginalFilename();
-//                        Path savePath = Path.of(PDF_DIR, filename);
-//
-//                        // 保存文件
-//                        file.transferTo(savePath.toFile());
-//
-//                        // 调用Python脚本，使用回调方式
-//                        String mdPath = convertAsyncWithCallback(savePath.toString());
-//                        results.put(filename, mdPath);
-//                    } catch (Exception e) {
-//                        results.put(file.getOriginalFilename(), "转换失败: " + e.getMessage());
-//                    }
-//                }, executorService);
-//                futures.add(future);
-//            }
-//
-//            // 等待所有任务完成
-//            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-//
-//            return results;
-//        } finally {
-//            // 关闭线程池
-//            executorService.shutdown();
-//        }
-//    }
+    /**
+     * 并发转换多个PDF文件为MD
+     *
+     * @param directory PDF文件目录
+     * @param files     PDF文件名列表
+     * @return 文件名到MD文件路径的映射
+     */
+    public Map<String, String> convertMultipleByFilenames(String directory, List<String> files) {
+        // 创建线程池
+        ExecutorService executorService = Executors.newFixedThreadPool(files.size());
+
+        // 存储转换结果
+        Map<String, String> results = new ConcurrentHashMap<>();
+
+        try {
+            // 提交所有转换任务
+            List<CompletableFuture<Void>> futures = files.stream()
+                    .map(file -> CompletableFuture.runAsync(() -> {
+                        try {
+                            String pdfPath = directory + File.separator + file;
+                            String mdPath = convertAsyncWithCallback(pdfPath);
+                            results.put(file, mdPath);
+                        } catch (Exception e) {
+                            results.put(file, "转换失败: " + e.getMessage());
+                        }
+                    }, executorService))
+                    .toList();
+
+            // 等待所有任务完成
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+            return results;
+        } finally {
+            // 关闭线程池
+            executorService.shutdown();
+        }
+    }
+
+    /**
+     * 上传多个PDF文件并并发转换为MD
+     *
+     * @param files 上传的PDF文件数组
+     * @return 文件名到MD文件路径的映射
+     */
+    public Map<String, String> uploadAndConvertMultiple(MultipartFile[] files) {
+        // 创建目录
+        try {
+            Files.createDirectories(Path.of(PDF_DIR));
+            Files.createDirectories(Path.of(RESULT_DIR));
+        } catch (IOException e) {
+            throw new RuntimeException("创建目录失败: " + e.getMessage(), e);
+        }
+
+        // 创建线程池
+        ExecutorService executorService = Executors.newFixedThreadPool(files.length);
+
+        // 存储转换结果
+        Map<String, String> results = new ConcurrentHashMap<>();
+
+        try {
+            // 提交所有转换任务
+            List<CompletableFuture<Void>> futures = new java.util.ArrayList<>();
+            for (MultipartFile file : files) {
+                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                    try {
+                        String filename = file.getOriginalFilename();
+                        Path savePath = Path.of(PDF_DIR, filename);
+
+                        // 保存文件
+                        file.transferTo(savePath.toFile());
+
+                        // 调用Python脚本，使用回调方式
+                        String mdPath = convertAsyncWithCallback(savePath.toString());
+                        results.put(filename, mdPath);
+                    } catch (Exception e) {
+                        results.put(file.getOriginalFilename(), "转换失败: " + e.getMessage());
+                    }
+                }, executorService);
+                futures.add(future);
+            }
+
+            // 等待所有任务完成
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+            return results;
+        } finally {
+            // 关闭线程池
+            executorService.shutdown();
+        }
+    }
 }

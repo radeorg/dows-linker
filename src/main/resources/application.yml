@@ -1,9 +1,87 @@
+spring:
+  application:
+    name: dows-linker
+  profiles:
+    include: mysql,mybatis
+    active: @profileActive@
+
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+#
+#  datasource:
+#    url: jdbc:h2:mem:maildb
+#    driverClassName: org.h2.Driver
+#    username: sa
+#    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+logging:
+  level:
+    root: info
+
+vaadin:
+  launch-browser: true
+
+setting:
+  mail:
+    folders:
+      inbox: "INBOX"
+      download: "DOWNLOAD"
+  download:
+    folder: E:/download/mail
+  extractor:
+    keywords:
+      - 仅供招聘专用，企业应尽保密义务，禁止外传
+      - 一经发现我司有权采取一切必要措施，包括但不限于暂停或终止服务。
+
 dows:
   linker:
     python:
       - clientName: "python312"
         javaPort: 25335
         pythonPort: 25336
+        threadPoolSize: 4
         entrypoints:
           - org.dows.linker.python.example.PdfProcessEntrypoint
 
+---
+#开发环境
+spring:
+  config:
+    activate:
+      on-profile: dev
+server:
+  port: 18001
+
+---
+#开发环境
+spring:
+  config:
+    activate:
+      on-profile: sit
+server:
+  port: 28001
+
+---
+#开发环境
+spring:
+  config:
+    activate:
+      on-profile: prd
+server:
+  port: 38001
