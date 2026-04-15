@@ -1,4 +1,4 @@
-package org.dows.linker.config;
+package org.dows.linker.mail;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class MailProperties {
+public class MailSetting {
 
     @Schema(title = "简历邮箱配置ID")
     private Long emailSettingId;

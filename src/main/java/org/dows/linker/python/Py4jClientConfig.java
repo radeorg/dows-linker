@@ -1,8 +1,6 @@
-package org.dows.linker.config;
+package org.dows.linker.python;
 
-import org.dows.linker.python.Entrypoint;
-import org.dows.linker.python.PythonLinker;
-import org.dows.linker.python.PythonHolder;
+import org.dows.linker.config.LinkerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import py4j.ClientServer;

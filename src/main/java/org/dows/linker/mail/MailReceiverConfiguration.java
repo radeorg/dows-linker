@@ -4,7 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dows.linker.config.MailProperties;
 import org.dows.linker.repository.dao.SettingMailDao;
 import org.dows.linker.repository.entity.SettingMailEntity;
 import org.springframework.boot.ApplicationArguments;
@@ -75,7 +74,7 @@ public class MailReceiverConfiguration implements ApplicationRunner {
 
         for (SettingMailEntity setting : settingMailEntities) {
             try {
-                MailProperties config = BeanUtil.copyProperties(setting, MailProperties.class);
+                MailSetting config = BeanUtil.copyProperties(setting, MailSetting.class);
                 // 为每个配置创建独立的通道
                 DirectChannel channel = createChannel(config);
                 channels.put(config.getKey(), channel);
@@ -104,7 +103,7 @@ public class MailReceiverConfiguration implements ApplicationRunner {
      * @param config 邮件服务器配置
      * @return DirectChannel
      */
-    private DirectChannel createChannel(MailProperties config) {
+    private DirectChannel createChannel(MailSetting config) {
         DirectChannel channel = new DirectChannel();
         channel.setDatatypes(MimeMessage.class);
 
@@ -123,7 +122,7 @@ public class MailReceiverConfiguration implements ApplicationRunner {
      * @param config 邮件服务器配置
      * @return MailReceiver
      */
-    private MailReceiver createMailReceiver(MailProperties config) {
+    private MailReceiver createMailReceiver(MailSetting config) {
         String storeUrl = buildStoreUrl(config);
         ImapMailReceiver receiver = new ImapMailReceiver(storeUrl);
 
@@ -153,7 +152,7 @@ public class MailReceiverConfiguration implements ApplicationRunner {
      * @param config        邮件服务器配置
      * @param messageSource 邮件接收消息源
      */
-    private void startScheduledTask(MailProperties config, MailReceivingMessageSource messageSource) {
+    private void startScheduledTask(MailSetting config, MailReceivingMessageSource messageSource) {
         // 使用Spring的TaskScheduler启动定时任务
         taskScheduler.scheduleAtFixedRate(() -> {
             try {
@@ -188,7 +187,7 @@ public class MailReceiverConfiguration implements ApplicationRunner {
                 protocol, encodedUsername, encodedPassword,
                 config.getMailHost(), config.getMailPort(), config.getFolder());
     }*/
-    private String buildStoreUrl(MailProperties config) {
+    private String buildStoreUrl(MailSetting config) {
         try {
             String encodedUsername = java.net.URLEncoder.encode(config.getEmailAddress(), java.nio.charset.StandardCharsets.UTF_8);
             String encodedPassword = java.net.URLEncoder.encode(config.getAuthCode(), java.nio.charset.StandardCharsets.UTF_8);
@@ -209,7 +208,7 @@ public class MailReceiverConfiguration implements ApplicationRunner {
      * @param config 邮件服务器配置
      * @return JavaMail属性
      */
-    private Properties buildJavaMailProperties(MailProperties config) {
+    private Properties buildJavaMailProperties(MailSetting config) {
         Properties properties = new Properties();
 
         String protocol = config.getProtocol();
